@@ -39,24 +39,25 @@ export function useStream(
   driven: boolean,
   streamId?: StreamId
 ) {
-  const [streamEnded, setStreamEnded] = useState(false);
+  const [streamEnded, setStreamEnded] = useState(null as boolean | null);
   const streamStarted = useRef(false);
 
   const usePersistence = useMemo(() => {
-    // Something is wrong with the stream, so we need to use the stored value.
-    if (streamEnded) {
+    // Something is wrong with the stream, so we need to use the database value.
+    if (streamEnded === false) {
       return true;
     }
-    // If we're not driving the stream, we must use the stored value.
+    // If we're not driving the stream, we must use the database value.
     if (!driven) {
       return true;
     }
-    // Otherwise, we use the stream as long as the streamId is set.
-    return streamId !== undefined;
+    // Otherwise, we'll try to drive the stream and use the HTTP response.
+    return false;
   }, [driven, streamId, streamEnded]);
+//  console.log("usePersistence", usePersistence);
   const persistentBody = useQuery(
     getPersistentBody,
-    usePersistence ? { streamId: streamId! } : "skip"
+    usePersistence && streamId ? { streamId: streamId! } : "skip"
   );
   const [streamBody, setStreamBody] = useState<string>("");
 
@@ -67,9 +68,7 @@ export function useStream(
         const success = await startStreaming(streamUrl, streamId, (text) => {
           setStreamBody((prev) => prev + text);
         });
-        if (!success) {
-          setStreamEnded(true);
-        }
+        setStreamEnded(success);
       })();
       return () => {
         streamStarted.current = true;
@@ -78,14 +77,25 @@ export function useStream(
   }, [driven, streamId, setStreamEnded, streamStarted]);
 
   const body = useMemo<StreamBody>(() => {
+    // console.log(
+    //   "body info p vs. s",
+    //   persistentBody?.text?.length ?? 0,
+    //   streamBody.length
+    //);
     if (persistentBody) {
       return persistentBody;
     }
+    let status: StreamStatus;
+    if (streamEnded === null) {
+      status = streamBody.length > 0 ? "streaming" : "pending";
+    } else {
+      status = streamEnded ? "done" : "error";
+    }
     return {
       text: streamBody,
-      status: (streamBody.length > 0 ? "streaming" : "pending") as StreamStatus,
+      status: status as StreamStatus,
     };
-  }, [persistentBody, streamBody]);
+  }, [persistentBody, streamBody, streamEnded]);
 
   return body;
 }
