@@ -13,9 +13,10 @@ The most common use case is for AI chat applications. The example app (found in 
 `example` directory) is a just such a simple chat app that demonstrates use of the
 component.
 
-Here's what you'll end up with! The left window is streaming the chat body to the client,
-and the right window is subscribed to the chat body via a database query. Refreshing
-the page will always reload the persisted chat history from the database:
+Here's what you'll end up with! The left browser window is streaming the chat body to the client,
+and the right browser window is subscribed to the chat body via a database query. The
+message is only updated in the database on sentence boundaries, whereas the HTTP
+stream sends tokens as they come:
 
 ![example-animation](./anim.gif)
 
