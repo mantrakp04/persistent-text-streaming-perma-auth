@@ -40,6 +40,8 @@ export function useStream(
   streamId?: StreamId
 ) {
   const [streamEnded, setStreamEnded] = useState(null as boolean | null);
+
+  // Used to prevent strict mode from causing multiple streams to be started.
   const streamStarted = useRef(false);
 
   const usePersistence = useMemo(() => {
@@ -70,6 +72,7 @@ export function useStream(
         });
         setStreamEnded(success);
       })();
+      // If we get remounted, we don't want to start a new stream.
       return () => {
         streamStarted.current = true;
       };
