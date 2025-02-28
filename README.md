@@ -180,6 +180,6 @@ client even after the stream has finished, or by other users, etc.
 
 ## Background
 
-This component is largely based on the Stack post [AI Chat with HTTP Streaming](https://stack.com/ai-chat-with-http-streaming).
+This component is largely based on the Stack post [AI Chat with HTTP Streaming](https://stack.convex.dev/ai-chat-with-http-streaming).
 
 <!-- END: Include on https://convex.dev/components -->
