@@ -140,13 +140,15 @@ const formSubmit = async (e: React.FormEvent) => {
 
 // chat-message.tsx, maybe?
 import { useStream } from "@convex-dev/persistent-text-streaming/react";
+
 // ...
+
 // In our component:
 const { text, status } = useStream(
   api.chat.getChatBody, // The query to call for the full stream body
   new URL(`${convexSiteUrl}/chat-stream`), // The HTTP endpoint for streaming
-  driven, // Set to true if this browser session created this chat and so should generate the stream
-  message.streamId as StreamId // The streamId of the chat to subscribe to!
+  driven, // True if this browser session created this chat and should generate the stream
+  chat.streamId as StreamId // The streamId from the chat database record
 );
 ```
 
