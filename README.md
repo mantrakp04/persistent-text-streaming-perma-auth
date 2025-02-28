@@ -17,7 +17,7 @@ Here's what you'll end up with! The left window is streaming the chat body to th
 and the right window is subscribed to the chat body via a database query. Refreshing
 the page will always reload the persisted chat history from the database:
 
-(TDB GIF)
+![example-animation](./anim.gif)
 
 ## Pre-requisite: Convex
 
@@ -138,7 +138,7 @@ const formSubmit = async (e: React.FormEvent) => {
 };
 
 // chat-message.tsx, maybe?
-import { useStream } from "@convex-dev/persistent-text-streaming";
+import { useStream } from "@convex-dev/persistent-text-streaming/react";
 // ...
 // In our component:
 const { text, status } = useStream(
