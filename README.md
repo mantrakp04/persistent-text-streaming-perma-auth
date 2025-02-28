@@ -7,4 +7,8 @@ the client even after the stream has finished, or by other users, etc.
 
 ## Usage
 
-coming soon. see `example/convex` and `example/src/components/*.tsx` for now.
+Coming soon. See `example/convex` and `example/src/components/*.tsx` for now.
+
+## Background
+
+This is based mainly on the excellent stack article [AI Chat with HTTP Streaming](https://stack.convex.dev/ai-chat-with-http-streaming).
