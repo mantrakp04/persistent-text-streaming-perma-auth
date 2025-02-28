@@ -15,6 +15,45 @@ The most common use case is for AI chat applications. The example app (found in 
 `example` directory) is a just such a simple chat app that demonstrates use of the
 component.
 
+Here's what you'll end up with! The left window is streaming the chat body to the client,
+and the right window is subscribed to the chat body via a database query. Refreshing
+the page will always reload the persisted chat history from the database:
+
+(TDB GIF)
+
+## Pre-requisite: Convex
+
+You'll need an existing Convex project to use the component.
+Convex is a hosted backend platform, including a database, serverless functions,
+and a ton more you can learn about [here](https://docs.convex.dev/get-started).
+
+Run `npm create convex` or follow any of the [quickstarts](https://docs.convex.dev/home) to set one up.
+
+## Installation
+
+See [`example/`](./example/convex/) for a working demo.
+
+1. Install the Persistent Text Streaming component:
+
+```bash
+npm install @convex-dev/persistent-text-streaming
+```
+
+2. Create a [`convex.config.ts`](./example/convex/convex.config.ts) file in your
+   app's `convex/` folder and install the component by calling `use`:
+
+```ts
+// convex/convex.config.ts
+import { defineApp } from "convex/server";
+import persistentTextStreaming from "@convex-dev/persistent-text-streaming/convex.config";
+
+const app = defineApp();
+app.use(persistentTextStreaming);
+export default app;
+```
+
+## Usage
+
 Here's a simple example of how to use the component:
 
 In `convex/chat.ts`:
@@ -111,46 +150,5 @@ const { text, status } = useStream(
   message.streamId as StreamId // The streamId of the chat to subscribe to!
 );
 ```
-
-Here's what you'll end up with! The left window is streaming the chat body to the client,
-and the right window is subscribed to the chat body via a database query. Refreshing
-the page will always reload the persisted chat history from the database:
-
-(TDB GIF)
-
-## Pre-requisite: Convex
-
-You'll need an existing Convex project to use the component.
-Convex is a hosted backend platform, including a database, serverless functions,
-and a ton more you can learn about [here](https://docs.convex.dev/get-started).
-
-Run `npm create convex` or follow any of the [quickstarts](https://docs.convex.dev/home) to set one up.
-
-## Installation
-
-See [`example/`](./example/convex/) for a working demo.
-
-1. Install the Persistent Text Streaming component:
-
-```bash
-npm install @convex-dev/persistent-text-streaming
-```
-
-2. Create a [`convex.config.ts`](./example/convex/convex.config.ts) file in your
-   app's `convex/` folder and install the component by calling `use`:
-
-```ts
-// convex/convex.config.ts
-import { defineApp } from "convex/server";
-import persistentTextStreaming from "@convex-dev/persistent-text-streaming/convex.config";
-
-const app = defineApp();
-app.use(persistentTextStreaming);
-export default app;
-```
-
-## Usage
-
-TBD use the above section?
 
 <!-- END: Include on https://convex.dev/components -->
