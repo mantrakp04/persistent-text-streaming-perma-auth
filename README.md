@@ -4,12 +4,10 @@
 
 <!-- START: Include on https://convex.dev/components -->
 
-This Convex component provides persistent text streaming to the client.
-Specifically, it provides a React hook that can be used to stream text to the
-client from an HTTP action. The text is persistent because--in addition to being
-streamed immediately back to the original client--it is stored in the database,
-so it can be accessed by the client even after the stream has finished, or by
-other users, etc.
+This Convex component enables persistent text streaming. It provides a React hook
+for streaming text from HTTP actions while simultaneously storing the data in the
+database. This persistence allows the text to be accessed after the stream ends
+or by other users.
 
 The most common use case is for AI chat applications. The example app (found in the
 `example` directory) is a just such a simple chat app that demonstrates use of the
@@ -150,5 +148,38 @@ const { text, status } = useStream(
   message.streamId as StreamId // The streamId of the chat to subscribe to!
 );
 ```
+
+## Design Philosophy
+
+This component balances HTTP streaming with database persistence to try to
+maximize the benefits of both. To understand why this balance is beneficial,
+let's examine each approach in isolation.
+
+- **HTTP streaming only**: If your app _only_ uses HTTP streaming, then the
+  original browser that made the request will have a great, high-performance
+  streaming experience. But if that HTTP connection is lost, if the browser
+  window is reloaded, if other users want to view the same chat, or this
+  users wants to revisit the conversation later, it won't be possible. The
+  conversation is only ephemeral because it was never stored on the server.
+
+- **Database Persistence Only**: If your app _only_ uses database persistence,
+  it's true that the conversation will be available for as long as you want.
+  Additionally, Convex's subscriptions will ensure the chat message is updated
+  as new text chunks are generated. However, there are a few downsides: one,
+  the entire chat body needs to be resent every time it is changed, which is a
+  lot redundant bandwidth to push into the database and over the websockets to
+  all connected clients. Two, you'll need to make a difficult tradeoff between
+  interactivity and efficiency. If you write every single small chunk to the
+  database, this will get quite slow and expensive. But if you batch up the chunks
+  into, say, paragraphs, then the user experience will feel laggy.
+
+This component combines the best of both worlds. The original browser that
+makes the request will still have a great, high-performance streaming experience.
+But the chat body is also stored in the database, so it can be accessed by the
+client even after the stream has finished, or by other users, etc.
+
+## Background
+
+This component is largely based on the Stack post [AI Chat with HTTP Streaming](https://stack.com/ai-chat-with-http-streaming).
 
 <!-- END: Include on https://convex.dev/components -->
