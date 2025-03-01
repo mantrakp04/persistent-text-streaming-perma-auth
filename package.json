@@ -1,5 +1,5 @@
 {
-  "name": "persistent-text-streaming",
+  "name": "@convex-dev/persistent-text-streaming",
   "description": "A Convex component for streaming durable text to the client, from LLMs and other sources.",
   "repository": "github:get-convex/persistent-text-streaming",
   "homepage": "https://github.com/get-convex/persistent-text-streaming#readme",
