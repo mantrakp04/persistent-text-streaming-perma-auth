@@ -115,7 +115,7 @@ export const streamChat = httpAction(async (ctx, request) => {
 });
 ```
 
-You need to expose this HTTP endpoint in your app, `http.ts`:
+You need to expose this HTTP endpoint in your backend, so in `convex/http.ts`:
 
 ```ts
 http.route({
