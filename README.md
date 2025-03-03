@@ -95,6 +95,7 @@ export const getChatBody = query({
 // Create an HTTP action that generates chunks of the chat body
 // and uses the component to stream them to the client and save them to the database.
 export const streamChat = httpAction(async (ctx, request) => {
+  const body = (await request.json()) as {streamId: string};
   const generateChat = async (ctx, request, streamId, chunkAppender) => {
     await chunkAppender("Hi there!");
     await chunkAppender("How are you?");
