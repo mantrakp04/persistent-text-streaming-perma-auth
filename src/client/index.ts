@@ -122,14 +122,22 @@ export class PersistentTextStreaming {
     }
     // Create a TransformStream to handle streaming data
     const { readable, writable } = new TransformStream();
-    const writer = writable.getWriter();
+    let writer = writable.getWriter() as WritableStreamDefaultWriter<Uint8Array> | null;
     const textEncoder = new TextEncoder();
     let pending = "";
 
     const doStream = async () => {
       const chunkAppender: ChunkAppender = async (text) => {
         // write to this handler's response stream on every update
-        await writer.write(textEncoder.encode(text));
+        if (writer) {
+          try {
+            await writer.write(textEncoder.encode(text));
+          } catch (e) {
+            console.error("Error writing to stream", e);
+            console.error("Will skip writing to stream but continue database updates");
+            writer = null;
+          }
+        }
         pending += text;
         // write to the database periodically, like at the end of sentences
         if (hasDelimeter(text)) {
@@ -141,14 +149,18 @@ export class PersistentTextStreaming {
         await streamWriter(ctx, request, streamId, chunkAppender);
       } catch (e) {
         await this.setStreamStatus(ctx, streamId, "error");
-        await writer.close();
+        if (writer) {
+          await writer.close();
+        }
         throw e;
       }
 
       // Success? Flush any last updates
       await this.addChunk(ctx, streamId, pending, true);
 
-      await writer.close();
+      if (writer) {
+        await writer.close();
+      }
     };
 
     // Kick off the streaming, but don't await it.
