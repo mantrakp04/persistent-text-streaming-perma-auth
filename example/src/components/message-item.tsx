@@ -80,10 +80,17 @@ function ServerMessage({
   stopStreaming: () => void;
   scrollToBottom: () => void;
 }) {
-  const convexSiteUrl = import.meta.env.VITE_CONVEX_URL.replace(
-    /\.cloud$/,
-    ".site"
-  );
+  let convexSiteUrl;
+  if (import.meta.env.VITE_CONVEX_URL.includes(".cloud")) {
+    convexSiteUrl = import.meta.env.VITE_CONVEX_URL.replace(
+      /\.cloud$/,
+      ".site"
+    );
+  } else {
+    const url = new URL(import.meta.env.VITE_CONVEX_URL);
+    url.port = String(Number(url.port) + 1);
+    convexSiteUrl = url.toString();
+  }
 
   const { text, status } = useStream(
     api.chat.getChatBody,
