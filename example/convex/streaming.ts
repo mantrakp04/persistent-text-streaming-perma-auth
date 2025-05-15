@@ -10,7 +10,7 @@ export const streamingComponent = new PersistentTextStreaming(
   components.persistentTextStreaming
 );
 
-export const getAssistantResponse = query({
+export const getStreamBody = query({
   args: {
     streamId: StreamIdValidator,
   },

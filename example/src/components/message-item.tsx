@@ -93,7 +93,7 @@ function ServerMessage({
   }
 
   const { text, status } = useStream(
-    api.streaming.getAssistantResponse,
+    api.streaming.getStreamBody,
     new URL(`${convexSiteUrl}/chat-stream`),
     driven,
     message.streamId as StreamId
