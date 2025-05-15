@@ -1,15 +1,19 @@
-"use client";
-
 import type React from "react";
 
 import type { Message } from "@/lib/types";
 import MessageItem from "./message-item";
-import { useRef, useEffect, useCallback, useState, useLayoutEffect } from "react";
+import {
+  useRef,
+  useEffect,
+  useCallback,
+  useState,
+  useLayoutEffect,
+} from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
 function useMessages() {
-  const messages: Message[] = [
+  const localMessages: Message[] = [
     {
       id: "1",
       chatId: "1",
@@ -18,26 +22,26 @@ function useMessages() {
       content: "Hello! How can I help you today?",
     },
   ];
-  const chats = useQuery(api.chat.getChats);
-  if (!chats) return messages;
+  const serverMessages = useQuery(api.messages.listMessages);
+  if (!serverMessages) return localMessages;
 
-  for (const chat of chats) {
-    messages.push({
-      id: chat._id + "-user",
-      chatId: chat._id,
+  for (const message of serverMessages) {
+    localMessages.push({
+      id: message._id + "-user",
+      chatId: message._id,
       role: "user",
-      timestamp: new Date(chat._creationTime),
-      content: chat.prompt,
+      timestamp: new Date(message._creationTime),
+      content: message.prompt,
     });
-    messages.push({
-      id: chat._id + "-assistant",
-      chatId: chat._id,
+    localMessages.push({
+      id: message._id + "-assistant",
+      chatId: message._id,
       role: "assistant",
-      timestamp: new Date(chat._creationTime),
-      streamId: chat.stream,
+      timestamp: new Date(message._creationTime),
+      streamId: message.responseStreamId,
     });
   }
-  return messages;
+  return localMessages;
 }
 
 export default function ChatWindow() {
@@ -48,7 +52,7 @@ export default function ChatWindow() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const clearChat = useMutation(api.chat.clearChat);
+  const clearAllMessages = useMutation(api.messages.clearMessages);
 
   const focusInput = useCallback(() => {
     inputRef.current?.focus();
@@ -69,7 +73,7 @@ export default function ChatWindow() {
     scrollToBottom();
   }, [windowSize, scrollToBottom]);
 
-  const createChat = useMutation(api.chat.createChat);
+  const sendMessage = useMutation(api.messages.sendMessage);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,13 +81,15 @@ export default function ChatWindow() {
 
     setInputValue("");
 
-    const chatId = await createChat({
+    const chatId = await sendMessage({
       prompt: inputValue,
     });
+
     setDrivenIds((prev) => {
       prev.add(chatId);
       return prev;
     });
+
     setIsStreaming(true);
   };
 
@@ -134,8 +140,8 @@ export default function ChatWindow() {
               type="button"
               disabled={messages.length < 2 || isStreaming}
               onClick={() => {
-                clearChat();
-                setInputValue('');
+                clearAllMessages();
+                setInputValue("");
                 setIsStreaming(false);
                 focusInput();
               }}
