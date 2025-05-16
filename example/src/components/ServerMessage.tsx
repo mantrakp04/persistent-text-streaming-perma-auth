@@ -8,32 +8,32 @@ import Markdown from "react-markdown";
 
 export function ServerMessage({
   message,
-  driven,
+  isDriven,
   stopStreaming,
   scrollToBottom,
 }: {
   message: Doc<"userMessages">;
-  driven: boolean;
+  isDriven: boolean;
   stopStreaming: () => void;
   scrollToBottom: () => void;
 }) {
   const { text, status } = useStream(
     api.streaming.getStreamBody,
     new URL(`${getConvexSiteUrl()}/chat-stream`),
-    driven,
+    isDriven,
     message.responseStreamId as StreamId
   );
 
   const isCurrentlyStreaming = useMemo(() => {
-    if (!driven) return false;
+    if (!isDriven) return false;
     return status === "pending" || status === "streaming";
-  }, [driven, status]);
+  }, [isDriven, status]);
 
   useEffect(() => {
-    if (!driven) return;
+    if (!isDriven) return;
     if (isCurrentlyStreaming) return;
     stopStreaming();
-  }, [driven, isCurrentlyStreaming, stopStreaming]);
+  }, [isDriven, isCurrentlyStreaming, stopStreaming]);
 
   useEffect(() => {
     if (!text) return;

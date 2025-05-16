@@ -58,7 +58,7 @@ export default function ChatWindow() {
               <MessageItem message={message} isUser={false}>
                 <ServerMessage
                   message={message}
-                  driven={drivenIds.has(message._id)}
+                  isDriven={drivenIds.has(message._id)}
                   stopStreaming={() => {
                     setIsStreaming(false);
                     focusInput();
