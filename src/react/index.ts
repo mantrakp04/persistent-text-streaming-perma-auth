@@ -6,6 +6,7 @@ import { useQuery } from "convex/react";
 import { StreamBody, StreamId } from "../client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FunctionReference } from "convex/server";
+import { useAuthToken } from "@convex-dev/auth/react";
 
 if (typeof window === "undefined") {
   throw new Error("this is frontend code, but it's running somewhere else!");
@@ -121,12 +122,16 @@ async function startStreaming(
   streamId: StreamId,
   onUpdate: (text: string) => void
 ) {
+  const token = useAuthToken();
   const response = await fetch(url, {
     method: "POST",
     body: JSON.stringify({
       streamId: streamId,
     }),
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
   });
   // Adapted from https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams
   if (response.status === 205) {
